@@ -47,8 +47,8 @@ fn main() {
     // stack variable (implements the Copy trait)
     {
         // This is a fixed size string literal
-        let greeting = "Hello!";
-        println!("{greeting}"); // will cause error
+        let greeting = "Hello";
+        println!("{greeting}!"); // will cause error
                                 // that will go out of scope and cause a compiler error
                                 // if trying to access when out of scope
     }
@@ -56,9 +56,10 @@ fn main() {
 
     // heap variable (implements the Drop trait)
     {
+        // This is a dynamically sized string which may grow/shrink 
         let mut greeting = String::from("Hello"); // must be mutable
-        greeting.push_str(", World!"); // to let us modify the string
-        println!("{greeting}");
+        greeting.push_str(", World"); // to let us modify the string
+        println!("{greeting}!");
     }
 
     // moving heap variables
@@ -66,14 +67,21 @@ fn main() {
         let hello = String::from("Hello");
         let moved_hello = hello;
         // println!("{hello}"); // no longer valid - compile error
-        println!("{moved_hello}");
+        println!("{moved_hello}!");
+    }
+    
+    // dropping heap variables
+    {
+        let mut hello = String::from("Hello");
+        hello = String::from("Goodbye");
+        println!("{hello}!"); // Prints "Goodbye!"
     }
 
     // copying heap variables
     {
         let hello = String::from("Hello");
         let cloned_hello = hello.clone(); // creates a deep copy
-        println!("{hello} {cloned_hello}!");
+        println!("{hello} {cloned_hello}!"); // hello is still valid
     }
 
     // copying and moving variables
@@ -88,9 +96,9 @@ fn main() {
 
     // ownership of return values
     {
-        let s1 = gives_ownership();
+        let s1 = gives_ownership(); // returns a String "A gift"
         let s2 = s1;
-        let s3 = takes_and_restores_ownership(s2);
+        let s3 = takes_and_restores_ownership(s2); // takes a String parameter and returns a reference to the same parameter
         takes_ownership(s3); // prints "A gift!"
     }
 
@@ -111,5 +119,17 @@ fn main() {
         // can also make an immutable ref to a mutable variable
         let length = get_length(&greeting);
         println!("Length is {length}");
+    }
+
+    // mutable and immutable references
+    {
+        let mut greeting = String::from("Hello");
+        let g1 = &greeting;
+        let g2 = &greeting;
+        println!("{g1} foo! {g2} bar!"); 
+
+        let g3 = &mut greeting; 
+        // println!("{g1} foo! {g2} bar! {g3} baz!"); // using immutable and mutable references to the same variable at the same time causes error
+        println!("{g3} baz!"); 
     }
 }
